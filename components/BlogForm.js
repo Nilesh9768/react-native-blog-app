@@ -1,9 +1,11 @@
-import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import { baseUrl } from './utils';
-// import * as firebase from 'firebase';
-// import {firebaseConfig} from '../firebase'
+import { storage } from '../firebase'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { Ionicons } from '@expo/vector-icons';
+
 export default function BlogForm({ navigation, route }) {
 
 
@@ -11,56 +13,51 @@ export default function BlogForm({ navigation, route }) {
   const [thumbnail, setThumbnail] = useState('')
   const [image, setImage] = useState('')
   const [content, setContent] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false)
+  // const [isUploaded, setIsUploaded] = useState(false)
+  // const [uploadingBlog, setUploadingBlog] = useState(false)
+
   const { blog } = route ? route.params : undefined
 
-
-  // if (!firebase.apps.length) {
-  //   firebase.initializeApp(firebaseConfig);
-  // }
   const uploadImage = async () => {
 
-    // const ref = firebase
-    //   .storage()
-    //   .ref()
-    //   .child(new Date());
-    // const snapshot = await ref.put(image);
+    if (image === '') return
+    setUploadingImage(true)
+    try {
+      const storageRef = ref(storage, `/images/${Date.now()}`);
+      const uploadTask = uploadBytesResumable(storageRef, image);
 
-    // console.log(snapshot)
-    // const url = await snapshot.ref.getDownloadURL();
-    // setThumbnail(url)
-    // console.log('Uploading...')
+      uploadTask.on('state_changed', (snapshot) => {
 
+        // const progress = (snapshot.bytesTransferred /snapshot.totalBytes) * 100
 
-    console.log('Uploading...')
-        const data = new FormData()
-        data.append('file', image)
-        data.append('blog-app-preset', 'blog_thumbnail')
-        // console.log(blob,'blob')
-        try {
-            var res = await fetch('https://api.cloudinary.com/v1_1/nileshyadavcloud/image/upload', {
-                method: "post",
-                body: data
-            })
-            const img = await res.json()
-            const url = img.secure_url
+      }, (error) => {
+        console.log(error)
+      }, () => {
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then(url => {
             console.log(url)
-        } catch (error) {
-            console.log(error)
-        }
+            setThumbnail(url)
+            setUploadingImage(false)
+          })
+      })
+    } catch (error) {
+      console.log(error, 'error')
+    }
   }
+
+
   const postBlogData = async () => {
 
     console.log('post')
     let url = blog ? `${baseUrl}/${blog._id}/edit` : `${baseUrl}/createBlogs`
     let method = blog ? 'put' : 'post';
 
-
     try {
 
       const newBlog = JSON.stringify({
-
         title,
-        // thumbnail,
+        thumbnail,
         content
       })
 
@@ -81,7 +78,6 @@ export default function BlogForm({ navigation, route }) {
     }
 
   }
-
 
 
   const handleChooseImage = async () => {
@@ -123,10 +119,25 @@ export default function BlogForm({ navigation, route }) {
   return (
     <View style={styles.formContainer}>
 
-      <View style={{ flexDirection: 'row', width: 300 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
         <Text style={styles.header}>Create A Blog</Text>
+        <Ionicons
+          style={styles.icon}
+          name='checkmark-circle-sharp'
+          size={54}
+          color='purple'
+          onPress={postBlogData}
+        />
       </View>
 
+      {/* <View style={styles.imageButtonContainer}>
+        <Button title="Choose Image" onPress={handleChooseImage} />
+        {
+          !uploadingImage ?
+            <Button title="upload Image" onPress={uploadImage} /> :
+            <ActivityIndicator size={'small'} color='black' />
+        }
+      </View> */}
       <TextInput
         style={styles.input}
         placeholder='Title'
@@ -137,25 +148,37 @@ export default function BlogForm({ navigation, route }) {
         style={[styles.input, styles.contentInput]}
         placeholder='Content goes here..'
         multiline={true}
-        numberOfLines={9}
+        numberOfLines={10}
         onChangeText={(val) => setContent(val)}
         underlineColorAndroid='transparent'
         value={content}
       />
 
-      <TouchableOpacity
+      <View style={styles.imageButtonContainer}>
+        <Button title="Choose Image" color={'purple'} onPress={handleChooseImage} />
+        {/* <Image
+
+        /> */}
+        {
+          !uploadingImage ?
+            <Button title="upload Image" color={'purple'} onPress={uploadImage} /> :
+            <ActivityIndicator size={'small'} color='black' />
+        }
+      </View>
+
+      {/* <TouchableOpacity
         onPress={postBlogData}
       >
         {
           blog ?
-            <Text style={styles.submitBtn}>Update</Text> :
-            <Text style={styles.submitBtn}>Submit</Text>
+            <Text style={styles.submitBtn}>UPDATE</Text> :
+            <Text style={styles.submitBtn}>SUBMIT</Text>
         }
 
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
-      <Button title="Choose Image" onPress={handleChooseImage} />
-      <Button title="upload Image" onPress={uploadImage} />
+
+
     </View>
   )
 }
@@ -165,35 +188,50 @@ const styles = StyleSheet.create({
   formContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 100
+    marginTop: 10
   },
   header: {
-    fontSize: 27,
-    marginVertical: 10,
+    fontSize: 40,
+    marginBottom: 10,
     textAlign: 'left',
-    color: 'grey',
+    color: 'black',
     alignSelf: 'flex-start'
   },
   input: {
 
-    width: 300,
+    width: 350,
     borderColor: '#d9d9d9',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 5,
-    textAlignVertical: 'top'
+
   },
   contentInput: {
-    maxHeight: 250
+    maxHeight: 250,
+    textAlignVertical: 'top'
   },
   submitBtn: {
 
-    backgroundColor: 'black',
+    backgroundColor: 'purple',
     color: 'white',
-    paddingVertical: 10,
-    paddingHorizontal: 15
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    fontSize: 18,
+    fontWeight: 'bold',
+    borderRadius: 5,
+    width: 350,
+    textAlign: 'center'
 
+  },
+  icon: {
+    marginBottom: 10
+  },
+  imageButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 350,
+    marginBottom: 10
   }
 })

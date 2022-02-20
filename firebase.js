@@ -1,19 +1,15 @@
-import firebase from "firebase";
-import "firebase/storage";
+import { initializeApp } from "firebase/app";
+import {getStorage} from 'firebase/storage'
 
-
-export const firebaseConfig = {
-  apiKey: "AIzaSyB42HIVnlgqKIGnwtXBSAQkgCPe-6qwY_M",
-  authDomain: "codex-image-upload-9768.firebaseapp.com",
-  databaseURL: "gs://codex-image-upload-9768.appspot.com",
-  projectId: "codex-image-upload-9768",
-  storageBucket: "codex-image-upload-9768.appspot.com",
-  messagingSenderId: "937782230586",
-  appId: "1:937782230586:web:bc0fe07a9f1c51a0d8bf03"
+const firebaseConfig = {
+  apiKey: "AIzaSyBCoRA8gNYPU9_u3eq5m8NBxYAmdO6-jc0",
+  authDomain: "react-native-blog-app-b8cb4.firebaseapp.com",
+  projectId: "react-native-blog-app-b8cb4",
+  storageBucket: "react-native-blog-app-b8cb4.appspot.com",
+  messagingSenderId: "852585725259",
+  appId: "1:852585725259:web:763323191a805f11f23cce"
 };
 
-// firebase.initializeApp(firebaseConfig);
-
-// const storage = firebase.storage();
-
-// export { storage, firebase as default };
+// Initialize Firebase
+export const app = initializeApp(firebaseConfig);
+export const storage = getStorage(app)
