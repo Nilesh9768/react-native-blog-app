@@ -4,20 +4,11 @@ import BlogCard from './BlogCard'
 import { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { baseUrl } from './utils';
-import AppLoading from 'expo-app-loading';
-import { Adamina_400Regular,useFonts } from '@expo-google-fonts/adamina'
 
 export default function HomeScreen({ navigation }) {
 
     const [blogs, setBlogs] = useState([])
     const [loading, setLoading] = useState(true)
-
-    let [fontsLoaded] = useFonts({
-        Adamina_400Regular,
-    });
-    // if (!fontsLoaded) {
-    //     return <AppLoading />;
-    // }
 
     const getBlogs = async () => {
         console.log('fetching blogs...')

@@ -6,19 +6,21 @@ import HomeScreen from './components/HomeScreen';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 
-export default function App() {
+// export default function App() {
 
-  const Stack = createNativeStackNavigator()
+//   const Stack = createNativeStackNavigator()
 
-  LogBox.ignoreLogs(['Setting a timer']);
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='BlogForm' component={BlogForm} />
-        <Stack.Screen name='Blog' component={Blog} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+//   LogBox.ignoreLogs(['Setting a timer']);
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator>
+//         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
+//         <Stack.Screen name='BlogForm' component={BlogForm} />
+//         <Stack.Screen name='Blog' component={Blog} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+export {default} from './storybook'
 

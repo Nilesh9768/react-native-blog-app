@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { baseUrl } from './utils';
 
-export default function BlogCard({ item, navigation, getBlogs }) {
+export default function BlogCard({ item, navigation, getBlogs,blogTitleColor='white' }) {
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const blog = item.item

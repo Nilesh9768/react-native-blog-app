@@ -46,15 +46,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'rgba(0,0,0,0.9)',
     paddingTop:10,
-    paddingBottom:8
+    paddingBottom:8,
+    width:360,
+    paddingHorizontal:10
   },
   image: {
-    width: 360,
+    width: 340,
     height: 300
   },
 
   content: {
-    width: 400,
+    width: 380,
     paddingHorizontal: 20,
     paddingTop: 10,
     fontSize: 18,

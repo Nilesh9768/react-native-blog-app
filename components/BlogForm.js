@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { baseUrl } from './utils';
 import { storage } from '../firebase'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 export default function BlogForm({ navigation, route }) {
 
@@ -14,7 +14,7 @@ export default function BlogForm({ navigation, route }) {
   const [image, setImage] = useState('')
   const [content, setContent] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false)
-  // const [isUploaded, setIsUploaded] = useState(false)
+  const [isUploaded, setIsUploaded] = useState(false)
   // const [uploadingBlog, setUploadingBlog] = useState(false)
 
   const { blog } = route ? route.params : undefined
@@ -39,6 +39,7 @@ export default function BlogForm({ navigation, route }) {
             console.log(url)
             setThumbnail(url)
             setUploadingImage(false)
+            setIsUploaded(true)
           })
       })
     } catch (error) {
@@ -72,6 +73,8 @@ export default function BlogForm({ navigation, route }) {
 
       const res = await resp.json()
       console.log(res)
+      setTitle('')
+      setContent('')
       navigation.push('Home')
     } catch (error) {
       console.log(error)
@@ -160,9 +163,26 @@ export default function BlogForm({ navigation, route }) {
 
         /> */}
         {
-          !uploadingImage ?
-            <Button title="upload Image" color={'purple'} onPress={uploadImage} /> :
-            <ActivityIndicator size={'small'} color='black' />
+          !isUploaded ?
+            !uploadingImage ?
+              <Button title="upload Image" color={'purple'} onPress={uploadImage} /> :
+              <ActivityIndicator size={'small'} color='black' />
+            : <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons
+                style={styles.checkSquare}
+                name="checkmark-done-circle"
+                size={24}
+                color="#33cc33"
+              />
+              {/* <FontAwesome
+                style={styles.checkSquare}
+                name="check-square-o"
+                size={24}
+                color="#33cc33"
+              /> */}
+              <Text style={styles.submitBtn}>Uploaded Successfully!</Text>
+            </View>
+
         }
       </View>
 
@@ -214,19 +234,23 @@ const styles = StyleSheet.create({
   },
   submitBtn: {
 
-    backgroundColor: 'purple',
-    color: 'white',
+    // backgroundColor: 'white',
+    color: '#33cc33',
     paddingVertical: 5,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
     fontSize: 18,
     fontWeight: 'bold',
     borderRadius: 5,
-    width: 350,
+    // width: 350,
     textAlign: 'center'
 
   },
   icon: {
     marginBottom: 10
+  },
+  checkSquare: {
+    position: 'relative',
+    top: 2
   },
   imageButtonContainer: {
     flexDirection: 'row',
